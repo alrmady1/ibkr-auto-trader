@@ -27,7 +27,7 @@ export class CloudBridge {
   interval() {
     if (this.viewerActive) return 4000;
     if (this.engine.running && marketStatus().isOpen) return 10000;
-    return 60000;
+    return 20000;
   }
 
   async tick() {
