@@ -1,8 +1,16 @@
 // Shared helpers for the Vercel functions (files starting with "_" are not exposed as routes).
 import crypto from "node:crypto";
 
-const REDIS_URL = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
-const REDIS_TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+// Vercel's Upstash integration may add a custom prefix (e.g. "kv_KV_REST_API_URL"), so match by suffix.
+const envBySuffix = (...suffixes) => {
+  for (const s of suffixes) {
+    const key = Object.keys(process.env).find((k) => k === s || k.endsWith(`_${s}`));
+    if (key && process.env[key]) return process.env[key];
+  }
+  return undefined;
+};
+const REDIS_URL = envBySuffix("KV_REST_API_URL", "UPSTASH_REDIS_REST_URL");
+const REDIS_TOKEN = envBySuffix("KV_REST_API_TOKEN", "UPSTASH_REDIS_REST_TOKEN");
 const SESSION_DAYS = 7;
 
 export const KEYS = { snap: "ibkr:snap", pushedAt: "ibkr:pushedAt", queue: "ibkr:cmds", lastView: "ibkr:lastView" };
