@@ -1,0 +1,8 @@
+# Only the dashboard (public/) and the cloud functions (api/) go to Vercel.
+# The trading engine runs on your PC next to TWS / IB Gateway.
+server.js
+src
+data
+node_modules
+start.bat
+config.default.json

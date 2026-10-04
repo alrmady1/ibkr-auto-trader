@@ -1,0 +1,7 @@
+node_modules/
+# Local settings, cloud token, trade history and generated credentials — never commit.
+data/
+.env
+.env.*
+.vercel
+*.log

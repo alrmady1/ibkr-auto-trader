@@ -1,0 +1,59 @@
+{
+  "mode": "sim",
+  "port": 3000,
+
+  "ib": {
+    "host": "127.0.0.1",
+    "paperPort": 7497,
+    "livePort": 7496,
+    "clientId": 17,
+    "accountId": ""
+  },
+
+  "initialCapital": null,
+
+  "watchlist": ["AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "AMD", "AVGO", "COST", "JNJ"],
+
+  "strategy": {
+    "name": "rsi_pullback",
+    "barSize": "5 mins",
+    "trendEma": 50,
+    "rsiPeriod": 14,
+    "rsiBuy": 35,
+    "rsiSell": 68,
+    "emaFast": 9,
+    "emaSlow": 21
+  },
+
+  "risk": {
+    "takeProfitPct": 1.0,
+    "stopLossPct": 0.7,
+    "maxPositionPct": 10,
+    "maxOpenPositions": 5,
+    "maxTradesPerDay": 12,
+    "dailyLossLimitPct": 2.0,
+    "useMargin": false,
+    "pdtProtection": true,
+    "openDelayMinutes": 15,
+    "flattenMinutesBeforeClose": 10,
+    "flattenOnHalt": true
+  },
+
+  "engine": {
+    "cycleSeconds": 60,
+    "simCycleSeconds": 3
+  },
+
+  "cloud": {
+    "enabled": false,
+    "url": "",
+    "token": ""
+  },
+
+  "sim": {
+    "startingCash": 10000,
+    "ignoreMarketHours": true,
+    "commissionPerShare": 0.005,
+    "minCommission": 1
+  }
+}

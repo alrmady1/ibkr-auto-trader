@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>منصة التداول الآلي</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <div class="logo">⟠</div>
+      <div>
+        <h1>منصة التداول الآلي</h1>
+        <div class="sub">الأسهم الأمريكية · Interactive Brokers</div>
+      </div>
+    </div>
+    <div class="status-strip">
+      <span id="modeBadge" class="badge">—</span>
+      <span id="connBadge" class="badge"><i class="dot"></i><span>—</span></span>
+      <span id="marketBadge" class="badge">—</span>
+      <span id="clock" class="clock">—</span>
+    </div>
+    <div class="controls">
+      <button id="btnStart" class="btn primary">▶ تشغيل البوت</button>
+      <button id="btnStop" class="btn">⏸ إيقاف</button>
+      <button id="btnKill" class="btn danger">⛔ إيقاف طارئ</button>
+      <button id="btnLogout" class="btn" hidden>خروج</button>
+    </div>
+  </header>
+
+  <div id="alerts"></div>
+
+  <nav class="tabs" id="tabs">
+    <button data-tab="dash" class="active">لوحة التحكم</button>
+    <button data-tab="portfolio">المحفظة</button>
+    <button data-tab="signals">الأسهم والإشارات</button>
+    <button data-tab="trades">الصفقات</button>
+    <button data-tab="settings">الإعدادات</button>
+    <button data-tab="log">السجل</button>
+  </nav>
+
+  <main>
+    <!-- Dashboard -->
+    <section id="tab-dash" class="tab active">
+      <div class="kpis" id="kpis"></div>
+      <div class="grid2">
+        <div class="card">
+          <div class="card-h"><h2>نمو المحفظة</h2><span class="muted" id="eqRange"></span></div>
+          <div class="chart-box"><canvas id="eqChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><h2>الربح والخسارة اليومي</h2></div>
+          <div class="chart-box"><canvas id="dailyChart"></canvas></div>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="card">
+          <div class="card-h"><h2>🏆 الأسهم الأكثر ربحاً</h2></div>
+          <div id="bestList" class="rank"></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><h2>📉 الأسهم الأقل ربحاً</h2></div>
+          <div id="worstList" class="rank"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Portfolio -->
+    <section id="tab-portfolio" class="tab">
+      <div class="grid2 wide-left">
+        <div class="card">
+          <div class="card-h"><h2>المراكز المفتوحة</h2><span class="muted" id="posCount"></span></div>
+          <div class="table-wrap"><table id="posTable"></table></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><h2>توزيع رأس المال</h2></div>
+          <div class="chart-box small"><canvas id="allocChart"></canvas></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h2>الأوامر المعلّقة (أهداف ووقف خسارة)</h2></div>
+        <div class="table-wrap"><table id="ordTable"></table></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h2>أداء كل سهم</h2></div>
+        <div class="table-wrap"><table id="symTable"></table></div>
+      </div>
+    </section>
+
+    <!-- Signals -->
+    <section id="tab-signals" class="tab">
+      <div class="card">
+        <div class="card-h"><h2>قائمة المراقبة وإشارات الاستراتيجية</h2><span class="muted" id="stratName"></span></div>
+        <div class="table-wrap"><table id="sigTable"></table></div>
+      </div>
+    </section>
+
+    <!-- Trades -->
+    <section id="tab-trades" class="tab">
+      <div class="card">
+        <div class="card-h"><h2>سجل الصفقات المغلقة</h2><span class="muted">الأرباح بعد العمولات التقديرية</span></div>
+        <div class="table-wrap"><table id="tradeTable"></table></div>
+      </div>
+    </section>
+
+    <!-- Settings -->
+    <section id="tab-settings" class="tab">
+      <div class="grid2">
+        <div class="card">
+          <div class="card-h"><h2>وضع التشغيل</h2></div>
+          <div class="modes" id="modes">
+            <label class="mode-opt"><input type="radio" name="mode" value="sim"><div><b>محاكاة</b><span>أسعار افتراضية — للتجربة الفورية بدون أي حساب</span></div></label>
+            <label class="mode-opt"><input type="radio" name="mode" value="paper"><div><b>حساب تجريبي (Paper)</b><span>حساب IB التجريبي — أسعار حقيقية وأموال وهمية</span></div></label>
+            <label class="mode-opt live"><input type="radio" name="mode" value="live"><div><b>حساب حقيقي (Live)</b><span>أموال حقيقية — لا تستخدمه قبل تجربة كافية</span></div></label>
+          </div>
+          <button class="btn primary" id="btnMode">تطبيق الوضع</button>
+          <h3>اتصال Interactive Brokers</h3>
+          <div class="form">
+            <label>العنوان<input id="ibHost"></label>
+            <label>منفذ Paper<input id="ibPaperPort" type="number"></label>
+            <label>منفذ Live<input id="ibLivePort" type="number"></label>
+            <label>Client ID<input id="ibClientId" type="number"></label>
+            <label class="full">رقم الحساب (اختياري)<input id="ibAccount" placeholder="مثال: U1234567 أو DU1234567"></label>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><h2>الاستراتيجية وقائمة الأسهم</h2></div>
+          <div class="form">
+            <label class="full">قائمة الأسهم (رموز مفصولة بفاصلة)<textarea id="watchlist" rows="3"></textarea></label>
+            <label>الاستراتيجية
+              <select id="stratSel">
+                <option value="rsi_pullback">شراء الارتداد (RSI ضمن اتجاه صاعد)</option>
+                <option value="ema_cross">تقاطع المتوسطات (EMA 9/21)</option>
+              </select>
+            </label>
+            <label>رأس المال المبدئي ($)<input id="initCap" type="number" placeholder="تلقائي"></label>
+            <label>RSI شراء تحت<input id="rsiBuy" type="number"></label>
+            <label>RSI خروج فوق<input id="rsiSell" type="number"></label>
+          </div>
+          <h3>إدارة المخاطر</h3>
+          <div class="form">
+            <label>جني الربح %<input id="tp" type="number" step="0.1"></label>
+            <label>وقف الخسارة %<input id="sl" type="number" step="0.1"></label>
+            <label>أقصى حجم للمركز % من المحفظة<input id="maxPos" type="number"></label>
+            <label>أقصى عدد مراكز<input id="maxOpen" type="number"></label>
+            <label>أقصى صفقات يومياً<input id="maxTrades" type="number"></label>
+            <label>حد الخسارة اليومي %<input id="dailyLoss" type="number" step="0.1"></label>
+            <label>إغلاق المراكز قبل نهاية الجلسة (دقيقة)<input id="flatten" type="number"></label>
+            <label class="check"><input id="useMargin" type="checkbox"> استخدام الهامش (Margin)</label>
+            <label class="check"><input id="pdt" type="checkbox"> حماية قاعدة PDT</label>
+          </div>
+          <button class="btn primary" id="btnSave">حفظ الإعدادات</button>
+        </div>
+
+        <div class="card" id="cloudCard">
+          <div class="card-h"><h2>☁ الربط مع المنصة السحابية</h2><span class="muted" id="cloudState"></span></div>
+          <p class="muted">لفتح المنصة من أي مكان عبر رابط Vercel. البوت يبقى على جهازك ويرسل البيانات للمنصة السحابية ويستقبل أوامر التشغيل والإيقاف منها.</p>
+          <div class="form">
+            <label class="full">رابط المنصة السحابية<input id="cloudUrl" placeholder="https://your-project.vercel.app" dir="ltr"></label>
+            <label class="full">رمز الربط (BRIDGE_TOKEN)<input id="cloudToken" type="password" placeholder="اتركه فارغاً للإبقاء على الرمز الحالي" dir="ltr"></label>
+            <label class="check"><input id="cloudEnabled" type="checkbox"> تفعيل الربط السحابي</label>
+          </div>
+          <button class="btn primary" id="btnCloud">حفظ الربط</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Log -->
+    <section id="tab-log" class="tab">
+      <div class="card">
+        <div class="card-h"><h2>سجل النشاط</h2></div>
+        <div id="logList" class="log"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    تنبيه: التداول ينطوي على مخاطر خسارة رأس المال. لا توجد استراتيجية تضمن ربحاً يومياً. هذه الأداة ليست استشارة مالية — جرّبها على الحساب التجريبي أولاً.
+  </footer>
+
+  <div id="toast" class="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
